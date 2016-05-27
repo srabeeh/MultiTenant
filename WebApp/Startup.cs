@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading;
+using System.Web;
 using Owin;
 using WebApp.Models;
 
@@ -25,6 +28,8 @@ namespace WebApp
             });
         }
 
+        internal static readonly object Locker = new object();
+
         private Tenant GetTenantFromUrl(String host)
         {
             if (String.IsNullOrEmpty(host))
@@ -33,9 +38,28 @@ namespace WebApp
             }
 
             Tenant tenant;
-            using (var context = new MultiTenantContext())
+                string cacheName = "all-tenants-cache-name";
+                int cacheTimeOutSeconds = 30;
+
+                List<Tenant> tenants = (List<Tenant>) HttpContext.Current.Cache.Get(cacheName);
+
+            if (tenants == null)
             {
-                DbSet<Tenant> tenants = context.Tenants;
+                lock (Locker)
+                {
+                    if (tenants == null)
+                    {
+                        using (var context = new MultiTenantContext())
+                        {
+                            tenants = context.Tenants.ToList();
+                            HttpContext.Current.Cache.Insert(cacheName, tenants, null,
+                                DateTime.Now.Add(new TimeSpan(0, 0, cacheTimeOutSeconds)), TimeSpan.Zero);
+                        }
+                    }
+                }
+
+
+
                 tenant = tenants.FirstOrDefault(a => a.DomainName.ToLower().Equals(host)) ??
                          tenants.FirstOrDefault(a => a.Default);
 
