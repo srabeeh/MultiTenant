@@ -7,11 +7,11 @@ using WebApp.Models;
 
 namespace WebApp.Controllers
 {
-    public class SpeakerController : Controller
+    public class SpeakerController : MultiTenantController
     {
         public ActionResult Index()
         {
-            return View();
+            return View("Index", Tenant);
         }
         
     }
