@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Web;
@@ -41,23 +42,16 @@ namespace WebApp
             string cacheName = "all-tenants-cache-name";
             int cacheTimeOutSeconds = 30;
 
-            List<Tenant> tenants = (List<Tenant>) HttpContext.Current.Cache.Get(cacheName);
-
-            if (tenants == null)
+            List<Tenant> tenants = TCache<List<Tenant>>.Get(cacheName, cacheTimeOutSeconds, () =>
             {
-                lock (Locker)
+                List<Tenant> tenantsFromCache;
+                using (var context = new MultiTenantContext())
                 {
-                    if (tenants == null)
-                    {
-                        using (var context = new MultiTenantContext())
-                        {
-                            tenants = context.Tenants.ToList();
-                            HttpContext.Current.Cache.Insert(cacheName, tenants, null,
-                                DateTime.Now.Add(new TimeSpan(0, 0, cacheTimeOutSeconds)), TimeSpan.Zero);
-                        }
-                    }
+                    tenantsFromCache = context.Tenants.ToList();
                 }
-            }
+                return tenantsFromCache;
+            });
+
             tenant = tenants.FirstOrDefault(a => a.DomainName.ToLower().Equals(host)) ??
                      tenants.FirstOrDefault(a => a.Default);
 
