@@ -38,10 +38,10 @@ namespace WebApp
             }
 
             Tenant tenant;
-                string cacheName = "all-tenants-cache-name";
-                int cacheTimeOutSeconds = 30;
+            string cacheName = "all-tenants-cache-name";
+            int cacheTimeOutSeconds = 30;
 
-                List<Tenant> tenants = (List<Tenant>) HttpContext.Current.Cache.Get(cacheName);
+            List<Tenant> tenants = (List<Tenant>) HttpContext.Current.Cache.Get(cacheName);
 
             if (tenants == null)
             {
@@ -57,19 +57,17 @@ namespace WebApp
                         }
                     }
                 }
+            }
+            tenant = tenants.FirstOrDefault(a => a.DomainName.ToLower().Equals(host)) ??
+                     tenants.FirstOrDefault(a => a.Default);
 
-
-
-                tenant = tenants.FirstOrDefault(a => a.DomainName.ToLower().Equals(host)) ??
-                         tenants.FirstOrDefault(a => a.Default);
-
-                if (tenant == null)
-                {
-                    throw new ApplicationException("Tenant not found and, no default found");
-                }
+            if (tenant == null)
+            {
+                throw new ApplicationException("Tenant not found and, no default found");
             }
 
             return tenant;
+
         }
     }
 }
