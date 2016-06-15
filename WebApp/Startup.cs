@@ -42,7 +42,7 @@ namespace WebApp
             string cacheName = "all-tenants-cache-name";
             int cacheTimeOutSeconds = 30;
 
-            List<Tenant> tenants = TCache<List<Tenant>>.Get(cacheName, cacheTimeOutSeconds, () =>
+            List<Tenant> tenants = new Cache<List<Tenant>>().Get(cacheName, cacheTimeOutSeconds, () =>
             {
                 List<Tenant> tenantsFromCache;
                 using (var context = new MultiTenantContext())

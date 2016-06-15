@@ -5,10 +5,10 @@ using WebApp.Models;
 
 namespace WebApp
 {
-    public class TCache<T>
+    public class Cache<T> : ITCache<T>
     {
-         private static readonly object Locker = new object();
-        public static T Get(string cacheName, int cacheTimeOutSeconds, Func<T> func)
+         internal static readonly object Locker = new object();
+        public T Get(string cacheName, int cacheTimeOutSeconds, Func<T> func)
         {
             var obj = HttpContext.Current.Cache.Get(cacheName);
 

@@ -158,6 +158,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="ITCache.cs" />
     <Compile Include="Migrations\201605252004097_InitialCreate.cs" />
     <Compile Include="Migrations\201605252004097_InitialCreate.Designer.cs">
       <DependentUpon>201605252004097_InitialCreate.cs</DependentUpon>
@@ -169,7 +170,7 @@
     <Compile Include="Models\Tenant.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="TCache.cs" />
+    <Compile Include="Cache.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
